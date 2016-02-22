@@ -1,0 +1,2 @@
+ch:insights-app-vm-alpha-0001.nm.flipkart.com
+nm:ekl-routes-8.nm.flipkart.com

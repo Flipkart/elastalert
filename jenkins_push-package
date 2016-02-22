@@ -1,0 +1,98 @@
+#!/bin/bash -x
+
+function die()
+{
+        echo "Error: $1" >&2
+        exit 1
+}
+
+TEMP_DIR=/tmp/apt-repo
+PACK_VERSION=$VERSION
+DEB_FILE=`ls ${TEMP_DIR}/${PACKAGE}*${PACK_VERSION}_all.deb`
+#MD5_FILE=$DEB_FILE.md5
+[ ! -f "$DEB_FILE" ] && die "Version:${PACK_VERSION} No package $DEB_FILE found"
+
+#md5sum $DEB_FILE |cut -d" " -f1 > $MD5_FILE
+DEB_FILE_NAME=`basename "$DEB_FILE"`
+VERSION_STRING=${DEB_FILE_NAME#${PACKAGE}_}
+VERSION_STRING=${VERSION_STRING%_all.deb}
+
+if [ -z "${TARGET}" ]; then
+	die "No target specified."
+fi
+
+if [ -z "${WAIT_TIME_BETWEEN_DEPLOYS_ON_HOSTS}" ]; then
+  WAIT_TIME_BETWEEN_DEPLOYS_ON_HOSTS=5
+fi
+
+case "$TARGET" in
+    NM|nm)
+                SSH_KEY=/var/lib/jenkins/.ssh/fk-build-user.key.prod-nm.squeeze;;
+    DMZ|dmz)
+                SSH_KEY=/var/lib/jenkins/.ssh/fk-build-user.key.stage-ch.squeeze;;
+    CH|ch)
+                SSH_KEY=/var/lib/jenkins/.ssh/fk-build-user.key.stage-ch.squeeze;;
+esac
+
+SSH_OPTS="-o CheckHostIP=no -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o BatchMode=yes"
+#SSH_OPTS="-i $SSH_KEY -o CheckHostIP=no -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o BatchMode=yes"
+SSH_USER=fk-build-user
+
+
+SERVERS="server_${PACKAGE}.txt"
+if [ ! -f "$SERVERS" ]; then
+	echo "server.txt not present for the package."
+	exit 0
+fi
+
+if [ -s "$SERVERS" ]; then
+
+AUTODEPLOY=`cat ${SERVERS} | grep -i ${TARGET}: | cut -d : -f2 | tr -d '[:space:]' | tr  "[:lower:]" "[:upper:]"`
+if [ "$AUTODEPLOY" == 'OFF' ]
+then
+        echo "Autodeploy is Off. Not pushing to servers"
+        exit 0
+else
+if [ "$AUTODEPLOY" == 'ON' ]
+then
+        SERVER_LIST=`cat ${SERVERS} | grep -i ${TARGET}: | cut -d : -f3 | tr ',' ' ' `
+else
+        SERVER_LIST=`cat ${SERVERS} | grep -i ${TARGET}: | cut -d : -f2 | tr ',' ' ' `
+fi
+fi
+
+if [ -z "${SERVER_LIST}" ]; then
+        echo "No deployment servers configured for environment $TARGET"
+	exit 0
+else
+
+	APT_CMD="sudo apt-get -qq"
+	sleep 60
+
+	for SERVER in `echo $SERVER_LIST`; do 
+                whoami
+		echo ssh $SSH_OPTS -t -t "$SSH_USER"@"$SERVER" "export DEBIAN_FRONTEND=noninteractive; $APT_CMD update && $APT_CMD install --allow-unauthenticated $PACKAGE=$VERSION_STRING"
+
+		ssh $SSH_OPTS -t -t "$SSH_USER"@"$SERVER" "export DEBIAN_FRONTEND=noninteractive; $APT_CMD update && $APT_CMD install --allow-unauthenticated $PACKAGE=$VERSION_STRING"
+#		scp $SSH_OPTS "$DEB_FILE" "$SSH_USER"@"$SERVER":
+		ssh_status=$?
+                if test $ssh_status -eq 0
+                then
+                       echo "Successfully installed package $DEB_FILE_NAME"
+                else
+                       echo "------"
+                       echo "FAILED: WARNING! Failed to install $PACKAGE on server $SERVER"
+                       echo "------"
+		       die "Deployment failed on server $SERVER, please take a look"
+		fi
+		sleep $WAIT_TIME_BETWEEN_DEPLOYS_ON_HOSTS
+	
+#		scp $SSH_OPTS "$DEB_FILE" "$SSH_USER"@"$SERVER": && ssh $SSH_OPTS -t -t "$SSH_USER"@"$SERVER" "export DEBIAN_FRONTEND=noninteractive; sudo dpkg -i $DEB_FILE_NAME"
+#		scp $SSH_OPTS "$DEB_FILE" "$SSH_USER"@"$SERVER":
+#		echo "scp $SSH_OPTS "$DEB_FILE" "$SSH_USER"@"$SERVER":"
+
+	done
+
+fi
+
+fi

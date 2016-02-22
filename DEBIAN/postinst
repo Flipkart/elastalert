@@ -1,0 +1,43 @@
+#! /bin/bash 
+
+set +x 
+
+PACKAGE="elastalert"
+
+PAC=$PACKAGE
+USER=fk-supply-chain
+GROUP=fk-supply-chain
+EKL_GID=4500
+EKL_UID=4525
+BASE_DIR=/usr/share/${PACKAGE}
+
+echo "calling post Installation script."
+check_and_mkdir() {
+    [ -d "$1" ] || mkdir -p "$1"
+}
+
+if [ "$1" == "configure" ] ; then
+    #creating user if it doesnt exist
+    if ! getent group $GROUP > /dev/null; then
+        #groupadd -g $EKL_UID $GROUP
+	    groupadd -g $EKL_GID $GROUP
+    fi
+
+    if ! getent passwd $EKL_UID > /dev/null; then
+        adduser --system --uid $EKL_UID --home /usr/share/$PAC --no-create-home \
+            --ingroup $GROUP --disabled-password --shell /bin/false \
+            $USER
+    fi
+
+    check_and_mkdir "/var/lib/$PACKAGE"
+    
+    chown -R $USER:$GROUP "/var/lib/$PACKAGE"
+    chown -R $USER:$GROUP /etc/init.d/$PACKAGE
+    cd /usr/share/${PACKAGE}
+    #python setup.py install
+    #echo "installed python setup"
+    #/etc/elastalert/config/rules.yaml
+    echo $PACKAGE > /etc/default/cosmos-service
+fi
+exit 0
+

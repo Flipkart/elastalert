@@ -1,0 +1,8 @@
+#!/bin/bash -e
+
+PAC=__PACKAGE__
+USER=__PACKAGE__
+
+if [ "$1" == "purge" ]; then
+	rm -rf "/usr/share/$PKG" "/var/log/flipkart/supply-chain/$PKG" "/etc/init.d/$PKG" "/etc/$PKG" "/var/lib/$PKG"
+fi

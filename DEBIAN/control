@@ -1,0 +1,8 @@
+Package: elastalert
+Version: 1.0.0
+Priority: standard
+Section: flipkart/ekl
+Depends: python,python-dev,python-flask,python-configparser
+Architecture: all
+Maintainer: SCM Last Mile <scm-last-mile@flipkart.com>,lm-geo-dev@flipkart.com
+Description: ElastAlert service for elastic search based alerting and monitoring

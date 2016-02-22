@@ -1,0 +1,13 @@
+#!/bin/bash -e
+
+PAC=__PACKAGE__
+CMD="$1"
+
+if [ "$CMD" == "remove" -o "$CMD" == "upgrade" ]; then
+	TMP_BAK="/tmp/backup_${PAC}"
+	rm -rf $TMP_BAK || true
+	mkdir $TMP_BAK || true 
+	mv /usr/share/$PAC/code $TMP_BAK 
+fi
+
+
