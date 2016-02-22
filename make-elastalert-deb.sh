@@ -32,7 +32,7 @@ cp postinst ../$PACKAGE_ROOT/DEBIAN/postinst
 
 cd ..
 cp {config.yaml,requirements.txt,tox.ini,.pre-commit-config.yaml,.travis.yml,Makefile,setup.cfg,setup.py,supervisord.conf.example} $PACKAGE_ROOT/usr/share/${PACKAGE}/
-cp -r {docs,elastalert,tests,elastalert.egg-info}/ $PACKAGE_ROOT/usr/share/${PACKAGE}/
+cp -r {docs,elastalert,tests}/ $PACKAGE_ROOT/usr/share/${PACKAGE}/
 
 cd init
 for file in `ls *`
