@@ -7,7 +7,7 @@ PACKAGE_ROOT="./elastalertz"
 INIT_DIR="/etc/init.d"
 echo $PACKAGE_ROOT
 
-VERSION=1.0.0
+VERSION=$VERSION
 
 ARCH=all
 
@@ -50,11 +50,11 @@ pip install -r requirements.txt
 
 
 dpkg-deb -b $PACKAGE_ROOT
-echo "Moving the package to ${PACKAGE}"
-mv $PACKAGE_ROOT.deb ${PACKAGE}.deb
+echo "Moving the package to ${PACKAGE}_${VERSION}_${ARCH}"
+mv $PACKAGE_ROOT.deb ${PACKAGE}_${VERSION}_${ARCH}.deb
 
 BASE_DIR=.
-FILE=${PACKAGE}.deb
+FILE=${PACKAGE}_${VERSION}_${ARCH}.deb
 TEMP_DIR=/tmp/apt-repo
 DEPLOYMENT_ENV=$DEPLOYMENT_ENV
 echo $FILE
