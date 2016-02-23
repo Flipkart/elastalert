@@ -10,7 +10,7 @@ case "$1" in
   start)
     ulimit -n 10000
     cd /usr/share/${PACKAGE}
-    sudo -u $USERNAME python -m elastalert.elastalert --verbose --rule /etc/elastalert/rule.yaml &>/home/fk-supply-chain/temp.log &
+    sudo -u $USERNAME python -m elastalert.elastalert --verbose --rule /etc/elastalert/rule.yaml &>/var/log/flipkart/elastalert/elastalert.log &
   ;;
   stop)
     kill -s SIGINT `pgrep -f elastalert`
