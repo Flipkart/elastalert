@@ -65,7 +65,7 @@ HOSTS="localhost"
 elif [ $DEPLOYMENT_ENV == 'STAGING' ]; then
 HOSTS="stage-wbuild1.ch.flipkart.com"
 elif [ $DEPLOYMENT_ENV == 'PRODUCTION' ]; then
-HOSTS=""
+HOSTS="wzy-build1.nm.flipkart.com"
 elif [ $DEPLOYMENT_ENV == 'MPIE' ]; then
 HOSTS="mp-build1.ch.flipkart.com"
 elif [ $DEPLOYMENT_ENV == 'MPIE2' ]; then

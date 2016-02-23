@@ -10,21 +10,21 @@ case "$1" in
   start)
     ulimit -n 10000
     cd /usr/share/${PACKAGE}
-    nohup python -m elastalert.elastalert --verbose --rule /etc/elastalert/rule.yaml &
+    sudo -u $USERNAME python -m elastalert.elastalert --verbose --rule /etc/elastalert/rule.yaml &>/home/fk-supply-chain/temp.log &
   ;;
   stop)
-   #kill -s SIGINT `cat $PIDFILE`
+    kill -s SIGINT `pgrep -f elastalert`
   ;;
   force_kill)
-    #kill -9 `cat $PIDFILE`
+    pkill -9 -f "elastalert"
   ;;
   restart)
-    #kill -s SIGINT `cat $PIDFILE`
+    
+    kill -s SIGINT `pgrep -f elastalert`
     sleep 20
     ulimit -n 10000
-    #cd /var/lib/$PACKAGE
-    #/usr/share/fk-ekl-fe-tracker-env/bin/uwsgi -H $PACKAGE_ROOT --pidfile $PIDFILE --ini $UWSGI_CONF
-    ;;
+    sudo -u $USERNAME python -m elastalert.elastalert --verbose --rule /etc/elastalert/rule.yaml > /home/fk-supply-chain/temp.log & 
+   ;;
   *)
     echo "USAGE: $0 start|stop"
     exit 3
