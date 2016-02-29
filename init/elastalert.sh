@@ -23,7 +23,7 @@ case "$1" in
     kill -s SIGINT `pgrep -f elastalert`
     sleep 20
     ulimit -n 10000
-    sudo -u $USERNAME python -m elastalert.elastalert --verbose --rule /etc/elastalert/rule.yaml > /home/fk-supply-chain/temp.log & 
+    sudo -u $USERNAME python -m elastalert.elastalert --verbose --rule /etc/elastalert/rule.yaml >/var/log/flipkart/elastalert/elastalert.log & 
    ;;
   *)
     echo "USAGE: $0 start|stop"
