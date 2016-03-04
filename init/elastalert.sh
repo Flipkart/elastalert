@@ -10,7 +10,7 @@ case "$1" in
   start)
     ulimit -n 10000
     cd /usr/share/${PACKAGE}
-    sudo -u $USERNAME python -m elastalert.elastalert --verbose --rule /etc/elastalert/rule.yaml &>/var/log/flipkart/elastalert/elastalert.log &
+    sudo -u $USERNAME python -m elastalert.elastalert --verbose &>/var/log/flipkart/elastalert/elastalert.log &
   ;;
   stop)
     kill -s SIGINT `pgrep -f elastalert`
@@ -23,7 +23,7 @@ case "$1" in
     kill -s SIGINT `pgrep -f elastalert`
     sleep 20
     ulimit -n 10000
-    sudo -u $USERNAME python -m elastalert.elastalert --verbose --rule /etc/elastalert/rule.yaml >/var/log/flipkart/elastalert/elastalert.log & 
+    sudo -u $USERNAME python -m elastalert.elastalert --verbose &>/var/log/flipkart/elastalert/elastalert.log & 
    ;;
   *)
     echo "USAGE: $0 start|stop"
