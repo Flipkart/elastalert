@@ -35,8 +35,8 @@ if [ "$1" == "configure" ] ; then
     chown -R $USER:$GROUP /etc/init.d/$PACKAGE
     cd /usr/share/${PACKAGE}
     #python setup.py install
-    #echo "installed python setup"
-    #/etc/elastalert/config/rules.yaml
+    echo "creating elastalert index"
+    elastalert-create-index --index elastalert_index --old-index None
     echo $PACKAGE > /etc/default/cosmos-service
 fi
 exit 0
